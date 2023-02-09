@@ -1,0 +1,130 @@
+// creator and Photographer :Anna Nikaki
+// Teachable machine version
+// read more about the project in my blog https://www.notion.so/annanikakinyu/Image-manipulation-mood-reader-8c97a1efaea345cba4961cbc79db4ce7
+//How it works : - smile for the artwork to turn green - sad cry face to turn the artwrok pink 
+
+let img;
+let mousecounter = 1;
+let fr = 30; // variable for framerate
+let growthRate = 2;
+let video;
+let classifier;
+let message;
+let mode = 1;
+
+function preload() {
+  img = loadImage("beach.jpg");
+  //img=createCapture(VIDEO);
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  noStroke();
+  frameRate(fr);
+  //---//
+  video = createCapture(VIDEO);
+  message = createP("Loading model and video...");
+  classifier = ml5.imageClassifier(
+    "https://teachablemachine.withgoogle.com/models/9EprUrNs0/",
+    video,
+    modelReady
+  );
+}
+
+function modelReady() {
+  message.html("Model loaded.");
+  classifier.classify(gotResult);
+}
+
+function draw() {
+  //background("white");
+  //start the gradient ( APPLIED to the ellipse)
+
+  // #CALLING radialGradient funciton !!!
+  //position x (start) , posiiton y ( START) , position, center, position x (END) , position y (START) , color starts,
+  radialGradient(
+    windowWidth,
+    windowHeight,
+    0, //Start pX, pY, start circle radius
+    windowWidth / 2 -40 ,
+    windowHeight / 2 - 120,
+    380, //End pX, pY, End circle radius
+    color(190, 100, 100), //Start color for the gradient
+    color(255, 100, 100) //End color -//-
+  );
+  //pixel manipulation !!!!
+  //loading the pixels but how?....
+  img.loadPixels();
+  //  for every 10 pixels of the image X length
+  //and for every 10 pixel for the image height so that we are reading/ taking every other 10 pixels.
+  //--- to load the colors we create a smaller loop that for RGBA we read
+
+  for (let x = 0; x < img.width; x += 40) {
+    for (let y = 0; y < img.height; y += 40) {
+      //--- to load the colors we create a smaller loop that for RGBA we read
+      let i = (x + y * img.width) * 4;
+      img.pixels[i] = 255; //for red
+      img.pixels[i + 1] += 0.1;
+      img.pixels[i + 2] -= 0.1;
+      //img.pixels[i + 3] -= 0.1; // alpha
+
+      let r = img.pixels[i];
+      let g = img.pixels[i + 1];
+      let b = img.pixels[i + 2];
+
+      // Draw a point with these colors
+
+      // depending on result load pixel color
+      if (mode ==1) {
+          stroke(r, g, b);
+          fill(r, g, b, 50);
+          circle(x, y, 50);
+        }
+        else 
+        {
+          stroke(b, r, b);
+          fill(b, r, b, 90);
+          circle(x, y, 50);
+        }
+        img.updatePixels();
+    
+      }
+    }
+  
+  
+}
+
+
+
+
+function gotResult(err, results) {
+    console.log(results);
+    let result = results[0].label;
+    if (result == "Happy") mode = 1;
+    else if (result == "Sad") mode = 2;
+    message.html(result);
+    classifier.classify(gotResult);
+    //console.log(mode);
+  }
+  function radialGradient(sX, sY, sR, eX, eY, eR, colorS, colorE) {
+    let gradient = drawingContext.createRadialGradient(sX, sY, sR, eX, eY, eR);
+    // drawingContex is a library called when graphics are used
+    // I am adding color stops for the gradient (What are these colors used for ?? )
+    gradient.addColorStop(0, colorS);
+    gradient.addColorStop(1, colorE);
+  }
+
+
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  
+}
+
+function mousePressed() 
+{
+  if (mouseX > 0 && mouseX < windowWidth && mouseY > 0 && mouseY < windowHeight) {
+    let fs = fullscreen();
+    fullscreen(!fs);
+  }
+}
