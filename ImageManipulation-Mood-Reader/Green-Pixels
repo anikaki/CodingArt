@@ -1,3 +1,7 @@
+// created by Anna Nikaki 
+// read more about the project in my blog https://www.notion.so/annanikakinyu/Image-manipulation-mood-reader-8c97a1efaea345cba4961cbc79db4ce7
+//Drone Photograph : Anna Nikaki
+
 
 let img;
 let mousecounter = 1;
