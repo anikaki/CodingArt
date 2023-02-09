@@ -1,0 +1,97 @@
+
+let img;
+let mousecounter = 1;
+let fr = 6; // variable for framerate
+let growthRate = 2;
+// step 1 preload gets called 
+function preload() {
+  img = loadImage("beach.jpg");
+  //img=createCapture(VIDEO);
+  
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  noStroke();
+  frameRate(fr);
+}
+
+function draw() {
+
+
+  //start the gradient ( APPLIED to the ellipse)
+
+  // #CALLING radialGradient funciton !!! 
+  //position x (start) , posiiton y ( START) , position, center, position x (END) , position y (START) , color starts, 
+  radialGradient(
+    windowWidth ,
+    windowHeight, 
+    0, //Start pX, pY, start circle radius
+    windowWidth / 2 - 40,
+    windowHeight / 2 - 120, 380, //End pX, pY, End circle radius
+    color(190, 100, 100), //Start color for the gradient 
+    color(255, 100, 100) //End color -//-
+  );
+  
+  
+  
+  //drawing the elipse in the center 
+//create variables for width and height of circle 
+  let ka= (random (400, 600)); 
+  ellipse( windowWidth / 2,windowHeight / 2, ka ,ka);
+
+
+  //shadow();
+ //blendMode(LIGHTEST);
+
+  //pixel manipulation !!!!
+  //loading the pixels but how?....
+  img.loadPixels();
+//  for every 10 pixels of the image X length 
+//and for every 10 pixel for the image height so that we are reading/ taking every other 10 pixels. 
+  //--- to load the colors we create a smaller loop that for RGBA we read 
+  for (let x = 0; x < img.width; x += 10) {
+    for (let y = 0; y < img.height; y += 10) {
+        //--- to load the colors we create a smaller loop that for RGBA we read
+      let i = (x + y * img.width) * 4;
+      img.pixels[i] =255;       //for red
+      img.pixels[i + 1] += 0.1; 
+      img.pixels[i + 2] -= 0.1; 
+      img.pixels[i + 3] -= 0.51; // alpha
+    
+      let g = img.pixels[i];
+      let r = img.pixels[i + 1];
+      let b = img.pixels[i + 2];
+      let m = img.pixels[i+3];
+      // color change 
+      if (mouseIsPressed) {
+         stroke(m, 255, m);
+      fill(m, 255, m, 50);
+     
+      circle(x, y, 8); 
+      }
+      
+      
+      // Draw a point with these colors 
+      stroke(r,g,b);
+      fill(r, g, b, 50);
+     
+      circle(x, y, 10);
+    }
+  }
+  img.updatePixels();
+
+ 
+}
+
+function radialGradient(sX, sY, sR, eX, eY, eR, colorS, colorE) {
+
+  let gradient = drawingContext.createRadialGradient(sX, sY, sR, eX, eY, eR); 
+  // drawingContex is a library called when graphics are used 
+  // I am adding color stops for the gradient (What are these colors used for ?? )
+  gradient.addColorStop(0, colorS);
+  gradient.addColorStop(1, colorE);
+
+}
+
+
